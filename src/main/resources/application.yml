@@ -1,0 +1,32 @@
+# Swagger UI
+springdoc:
+  packages-to-scan: moamoa.core
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+spring:
+  # GCP Cloud SQL
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # hibernate
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update # 유지보수 시에는 none으로 변경할 것
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+# GCP Cloud Storage
+storage:
+  bucket: co-re-storage
+  project-id: CO-RE
+# JWT
+jwt:
+  secret: ${JWT_TOKEN}
