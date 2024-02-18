@@ -55,7 +55,7 @@ jobs:
       - name: Login to Google Container Registry
         uses: docker/login-action@v1
         with:
-          registry: gcr.io
+          registry: asia-northeast3-docker.pkg.dev
           username: _json_key
           password: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
