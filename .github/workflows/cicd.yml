@@ -37,7 +37,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
-
+# 환경변수는 GCP에서 직접 설정
 #      - name: Create .env file
 #        run: |
 #          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
