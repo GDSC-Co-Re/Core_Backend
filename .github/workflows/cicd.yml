@@ -71,8 +71,9 @@ jobs:
 
       # Google Cloud Run에 배포
       - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v0
+        uses: google-github-actions/deploy-cloudrun@v0.5.0
         with:
           service: my-app
           image: asia-northeast3-docker.pkg.dev/co-re-413916/co-re-docker/my-app:latest
-          credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          region: asia-northeast3
+          #credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
