@@ -47,6 +47,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
           JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
 
+      # 서비스 계정 권한 
       # Docker 이미지 빌드 및 Google Container Registry(GCR)에 푸시
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
