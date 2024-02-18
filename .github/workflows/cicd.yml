@@ -47,7 +47,6 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
           JWT_TOKEN: ${{ secrets.JWT_TOKEN }}
 
-      # 서비스 계정 권한 - 아티팩트 생성자
       # Docker 이미지 빌드 및 Google Container Registry(GCR)에 푸시
       # 아피택트 레지스트리에서 직접 계정을 추가
       - name: Set up Docker Buildx
