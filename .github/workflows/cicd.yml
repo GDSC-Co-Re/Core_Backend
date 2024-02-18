@@ -38,6 +38,15 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
 
+      - name: Create .env file
+        run: |
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_URL=${{ secrets.DB_URL }} >> .env
+          echo DB_USER=${{ secrets.DB_USER }} >> .env
+          echo JWT_TOKEN=${{ secrets.JWT_TOKEN }} >> .env
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > google-credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${PWD}/google-credentials.json" >> .env
+
       - name: Build with Gradle
         run: ./gradlew clean build
         env:
