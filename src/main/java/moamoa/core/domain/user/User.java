@@ -77,7 +77,6 @@ public class User {
         this.phone = phone;
         this.userRole = Objects.requireNonNullElse(userRole, userRole.ROLE_USER); //값이 없다면, ROLE_USER로 초기화
         this.address = address;
-        this.userRole = Objects.requireNonNullElse(userRole, userRole.ROLE_USER); //값이 없다면, ROLE_USER로 초기화
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.token = token;
