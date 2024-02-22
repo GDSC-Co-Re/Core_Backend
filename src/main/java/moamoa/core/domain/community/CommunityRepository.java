@@ -39,4 +39,43 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 //    // 일반팩과 멸균팩을 합쳐서 계산한다.
 //    @Query("SELECT SUM(h.aseptic_quantity) + SUM(h.paper_quantity) FROM WasteDisposalHistory h WHERE h.user.id = :userId")
 //    Long calculateUserTotalEmissions(@Param("userId") Long userId);
+    @Query("SELECT SUM(wdh.asepticCartonQuantity + wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.community.id = :communityId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateMonthlyTotalEmissions(@Param("communityId") Long communityId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.community.id = :communityId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateMonthlyAsepticCartonEmissions(@Param("communityId") Long communityId);
+
+    @Query("SELECT SUM(wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.community.id = :communityId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateMonthlyPaperCartonEmissions(@Param("communityId") Long communityId);
+
+//    @Query(value = "SELECT R.ranking FROM (" +
+//            "SELECT user_id, " +
+//            "RANK() OVER (ORDER BY SUM(waste_disposal_history_aseptic_quantity) + SUM(waste_disposal_history_paper_quantity) DESC) AS ranking " +
+//            "FROM waste_disposal_history_tb " +
+//            "WHERE community_id = :communityId " +
+//            "GROUP BY user_id) R " +
+//            "WHERE R.user_id = :userId", nativeQuery = true)
+
+    @Query(value = "SELECT ranking FROM (" +
+            "SELECT c.community_id, " +
+            "SUM(wdh.waste_disposal_history_aseptic_quantity) + SUM(wdh.waste_disposal_history_paper_quantity) AS total_emissions, " +
+            "RANK() OVER (ORDER BY SUM(wdh.waste_disposal_history_aseptic_quantity) + SUM(wdh.waste_disposal_history_paper_quantity) DESC) AS ranking " +
+            "FROM community_tb c " +
+            "JOIN waste_disposal_history_tb wdh ON c.community_id = wdh.community_id " +
+            "WHERE c.depth2 = :depth2 " +
+            "GROUP BY c.community_id) AS community_rankings " +
+            "WHERE community_id = :communityId", nativeQuery = true)
+    int findDepth2CommunityRanking(@Param("communityId") Long communityId, @Param("depth2") String depth2);
 }

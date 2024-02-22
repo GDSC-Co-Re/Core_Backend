@@ -1,8 +1,10 @@
 package moamoa.core.domain.wasteDisposalHistory;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import moamoa.core.domain.community.Community;
 import moamoa.core.domain.user.User;
 
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "WASTE_DISPOSAL_HISTORY_TB")
 public class WasteDisposalHistory {
     @Id
@@ -31,6 +35,9 @@ public class WasteDisposalHistory {
     @Column(name="waste_disposal_history_aseptic_quantity")
     private Long asepticCartonQuantity; //멸균팩
 
+    @Column(name="waste_disposal_history_paper_or_aseptic")
+    private Boolean paperOrAseptic;
+
     @Column(name="waste_disposal_history_disposal_time")
     private LocalDateTime disposalTime;
 
@@ -45,15 +52,4 @@ public class WasteDisposalHistory {
 
     public void deleteLikes() { this.likes-=1; }
 
-    @Builder
-    public WasteDisposalHistory(Long id, User user, Community community, Long paperCartonQuantity, Long asepticCartonQuantity, LocalDateTime disposalTime, Long likes, boolean collect) {
-        this.id = id;
-        this.user = user;
-        this.community = community;
-        this.paperCartonQuantity = paperCartonQuantity;
-        this.asepticCartonQuantity = asepticCartonQuantity;
-        this.disposalTime = disposalTime;
-        this.likes = likes;
-        this.collect = collect;
-    }
 }
