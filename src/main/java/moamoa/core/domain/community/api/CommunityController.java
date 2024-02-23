@@ -4,14 +4,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import moamoa.core.domain.community.CommunityService;
 import moamoa.core.domain.community.dto.CommunityInfoDto;
-import moamoa.core.domain.user.User;
 import moamoa.core.domain.user.UserService;
-import moamoa.core.domain.user.dto.MainInfoDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "커뮤니티 페이지 API", description = "커뮤니티 페이지 정보 제공용 API.")
 @RequestMapping("/community")
-public class CommunityInfoController {
+public class CommunityController {
     private final CommunityService communityService; // UserService를 주입
     private final UserService userService;
     @GetMapping("/info")
