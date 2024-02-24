@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface WasteDisposalHistoryRepository extends JpaRepository<WasteDisposalHistory, Long> {
     @Query("SELECT SUM(wdh.asepticCartonQuantity) + SUM(wdh.paperCartonQuantity) " +
@@ -27,4 +29,29 @@ public interface WasteDisposalHistoryRepository extends JpaRepository<WasteDispo
 //    Page<WasteDisposalHistoryDto> findCommunityWasteDisposalHistory(@Param("communityId") Long communityId, Pageable pageable);
     Page<WasteDisposalHistory> findByCommunityId(Long communityId, Pageable pageable);
 
+    Page<WasteDisposalHistory> findByUserId(Long userId, Pageable pageable);
+
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, WEEK(waste_disposal_history_disposal_time) AS week, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE user_id = :userId " +
+            "GROUP BY year, week " +
+            "ORDER BY year DESC, week DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4WeeksUserEmission(@Param("userId") Long userId);
+
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, MONTH(waste_disposal_history_disposal_time) AS month, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE user_id = :userId " +
+            "GROUP BY year, month " +
+            "ORDER BY year DESC, month DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4MonthsUserEmission(@Param("userId") Long userId);
+
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE user_id = :userId " +
+            "GROUP BY year " +
+            "ORDER BY year DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4YearsUserEmission(@Param("userId") Long userId);
 }
