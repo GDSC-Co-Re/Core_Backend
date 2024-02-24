@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class WasteDisposalHistoryDto {
 
     @Schema(description = "유저명", example = "홍길동")
-    private String userName;
+    private String userNickname;
 
     @Schema(description = "배출 시각", example = "2024-01-28 12:34:56")
     private LocalDateTime disposalTime;
