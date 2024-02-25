@@ -8,6 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
+
+    @Query("SELECT COUNT(u.id) FROM User u WHERE u.community.id = :communityId")
+    Long getMemberCount(@Param("communityId") Long communityId);
+
     // 커뮤니티 총 배출량 계산
     // 일반팩과 멸균팩을 합쳐서 계산한다.
     @Query("SELECT SUM(wdh.asepticCartonQuantity) + SUM(wdh.paperCartonQuantity) " +

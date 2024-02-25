@@ -55,6 +55,30 @@ public interface WasteDisposalHistoryRepository extends JpaRepository<WasteDispo
             "LIMIT 4", nativeQuery = true)
     List<Object[]> get4YearsUserEmission(@Param("userId") Long userId);
 
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, WEEK(waste_disposal_history_disposal_time) AS week, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE community_id = :communityId " +
+            "GROUP BY year, week " +
+            "ORDER BY year DESC, week DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4WeeksCommunityEmission(@Param("communityId") Long communityId);
+
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, MONTH(waste_disposal_history_disposal_time) AS month, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE community_id = :communityId " +
+            "GROUP BY year, month " +
+            "ORDER BY year DESC, month DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4MonthsCommunityEmission(@Param("communityId") Long communityId);
+
+    @Query(value = "SELECT YEAR(waste_disposal_history_disposal_time) AS year, SUM(waste_disposal_history_aseptic_quantity+waste_disposal_history_paper_quantity) AS sum " +
+            "FROM waste_disposal_history_tb " +
+            "WHERE community_id = :communityId " +
+            "GROUP BY year " +
+            "ORDER BY year DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<Object[]> get4YearsCommunityEmission(@Param("communityId") Long communityId);
+
     @Query("SELECT SUM(wdh.asepticCartonQuantity + wdh.paperCartonQuantity) " +
             "FROM WasteDisposalHistory wdh " +
             "WHERE wdh.user.id = :userId " +
