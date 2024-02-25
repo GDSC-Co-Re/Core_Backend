@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "WASTE_DISPOSAL_HISTORY_TB")
 public class WasteDisposalHistory {
@@ -52,4 +52,16 @@ public class WasteDisposalHistory {
 
     public void deleteLikes() { this.likes-=1; }
 
+    @Builder
+    public WasteDisposalHistory(Long id, User user, Community community, Long paperCartonQuantity, Long asepticCartonQuantity, Boolean paperOrAseptic, LocalDateTime disposalTime, Long likes, boolean collect) {
+        this.id = id;
+        this.user = user;
+        this.community = community;
+        this.paperCartonQuantity = paperCartonQuantity;
+        this.asepticCartonQuantity = asepticCartonQuantity;
+        this.paperOrAseptic = paperOrAseptic;
+        this.disposalTime = disposalTime;
+        this.likes = likes;
+        this.collect = collect;
+    }
 }
