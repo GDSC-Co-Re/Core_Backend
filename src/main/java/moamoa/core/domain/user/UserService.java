@@ -2,8 +2,10 @@ package moamoa.core.domain.user;
 
 import moamoa.core.domain.community.CommunityService;
 import moamoa.core.domain.community.dto.CommunityInfoDto;
+import moamoa.core.domain.community.dto.RecentCoreInfoDto;
 import moamoa.core.domain.user.dto.MainInfoDto;
 import moamoa.core.domain.user.dto.MyPageDto;
+import moamoa.core.domain.user.dto.UserCoreStoryDto;
 import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistory;
 import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistoryRepository;
 import moamoa.core.domain.wasteDisposalHistory.dto.WasteDisposalHistoryDto;
@@ -78,6 +80,51 @@ public class UserService {
 
     }
 
+    // 사용자의 주별 총 배출량 계산
+    public Long calculateUserWeeklyTotalEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserWeeklyTotalEmissions(userId);
+    }
+
+    // 사용자의 주별 멸균팩 배출량 계산
+    public Long calculateUserWeeklyAsepticCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserWeeklyAsepticCartonEmissions(userId);
+    }
+
+    // 사용자의 주별 일반팩 배출량 계산
+    public Long calculateUserWeeklyPaperCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserWeeklyPaperCartonEmissions(userId);
+    }
+
+    // 사용자의 월별 총 배출량 계산
+    public Long calculateUserMonthlyTotalEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserMonthlyTotalEmissions(userId);
+    }
+
+    // 사용자의 월별 멸균팩 배출량 계산
+    public Long calculateUserMonthlyAsepticCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserMonthlyAsepticCartonEmissions(userId);
+    }
+
+    // 사용자의 월별 일반팩 배출량 계산
+    public Long calculateUserMonthlyPaperCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserMonthlyPaperCartonEmissions(userId);
+    }
+
+    // 사용자의 연별 총 배출량 계산
+    public Long calculateUserYearlyTotalEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserYearlyTotalEmissions(userId);
+    }
+
+    // 사용자의 연별 멸균팩 배출량 계산
+    public Long calculateUserYearlyAsepticCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserYearlyAsepticCartonEmissions(userId);
+    }
+
+    // 사용자의 연별 일반팩 배출량 계산
+    public Long calculateUserYearlyPaperCartonEmissions(Long userId) {
+        return wasteDisposalHistoryRepository.calculateUserYearlyPaperCartonEmissions(userId);
+    }
+
     public MyPageDto getMyPage(String email, Pageable pageable){
         User user = userRepository.findMemberByEmail(email);
         if (user == null) {
@@ -118,6 +165,58 @@ public class UserService {
                 .weeksEmission(weeksEmission)
                 .monthsEmission(monthsEmission)
                 .yearsEmission(yearsEmission)
+                .wasteDisposalHistories(wasteDisposalHistories)
+                .build();
+
+    }
+
+    public UserCoreStoryDto getUserCoreStory(String email, Pageable pageable) {
+
+        User user = userRepository.findMemberByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        // 주
+        Long weeklyUserTotalEmissions = calculateUserWeeklyTotalEmissions(user.getId());
+        Long weeklyUserAsepticCartonEmissions = calculateUserWeeklyAsepticCartonEmissions(user.getId());
+        Long weeklyUserPaperCartonEmissions = calculateUserWeeklyPaperCartonEmissions(user.getId());
+
+        // 월
+        Long monthlyUserTotalEmissions = calculateUserMonthlyTotalEmissions(user.getId());
+        Long monthlyUserAsepticCartonEmissions = calculateUserMonthlyAsepticCartonEmissions(user.getId());
+        Long monthlyUserPaperCartonEmissions = calculateUserMonthlyPaperCartonEmissions(user.getId());
+
+        // 년
+        Long yearlyUserTotalEmissions = calculateUserYearlyTotalEmissions(user.getId());
+        Long yearlyUserAsepticCartonEmissions = calculateUserYearlyAsepticCartonEmissions(user.getId());
+        Long yearlyUserPaperCartonEmissions = calculateUserYearlyPaperCartonEmissions(user.getId());
+
+        // DTO로 매핑
+        Page<WasteDisposalHistory> historyPage = wasteDisposalHistoryRepository.findByUserId(user.getId(), pageable);
+        List<WasteDisposalHistoryDto> wasteDisposalHistories = historyPage.getContent()
+                .stream()
+                .map(history -> new WasteDisposalHistoryDto(
+                        history.getUser().getNickname(),
+                        history.getDisposalTime(),
+                        history.getAsepticCartonQuantity(),
+                        history.getPaperCartonQuantity(),
+                        history.getLikes(),
+                        history.getPaperOrAseptic()))
+                .collect(Collectors.toList());
+
+
+        // CommunityInfoDto 객체 생성
+        return UserCoreStoryDto.builder()
+                .userTotalEmissionsWeek(weeklyUserTotalEmissions)
+                .userTotalAsepticEmissionsWeek(weeklyUserAsepticCartonEmissions)
+                .userTotalRefrigeratedEmissionsWeek(weeklyUserPaperCartonEmissions)
+                .userTotalEmissionsMonth(monthlyUserTotalEmissions)
+                .userTotalAsepticEmissionsMonth(monthlyUserAsepticCartonEmissions)
+                .userTotalRefrigeratedEmissionsMonth(monthlyUserPaperCartonEmissions)
+                .userTotalEmissionsYear(yearlyUserTotalEmissions)
+                .userTotalAsepticEmissionsYear(yearlyUserAsepticCartonEmissions)
+                .userTotalRefrigeratedEmissionsYear(yearlyUserPaperCartonEmissions)
                 .wasteDisposalHistories(wasteDisposalHistories)
                 .build();
 
