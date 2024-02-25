@@ -2,6 +2,7 @@ package moamoa.core.domain.community;
 
 import moamoa.core.domain.Address;
 import moamoa.core.domain.community.dto.CommunityInfoDto;
+import moamoa.core.domain.community.dto.RecentCoreInfoDto;
 import moamoa.core.domain.user.User;
 import moamoa.core.domain.user.UserRepository;
 import moamoa.core.domain.user.dto.MainInfoDto;
@@ -36,6 +37,18 @@ public class CommunityService {
         return communityRepository.calculateTotalEmissions(communityId);
     }
 
+    public Long calculateCommunityWeeklyTotalEmissions(Long communityId) {
+        return communityRepository.calculateWeeklyTotalEmissions(communityId);
+    }
+
+    public Long calculateCommunityWeeklyAsepticCartonEmissions(Long communityId){
+        return communityRepository.calculateWeeklyAsepticCartonEmissions(communityId);
+    }
+
+    public Long calculateCommunityWeeklyPaperCartonEmissions(Long communityId){
+        return communityRepository.calculateWeeklyPaperCartonEmissions(communityId);
+    }
+
     public Long calculateCommunityMonthlyTotalEmissions(Long communityId) {
         return communityRepository.calculateMonthlyTotalEmissions(communityId);
     }
@@ -46,6 +59,18 @@ public class CommunityService {
 
     public Long calculateCommunityMonthlyPaperCartonEmissions(Long communityId){
         return communityRepository.calculateMonthlyPaperCartonEmissions(communityId);
+    }
+
+    public Long calculateCommunityYearlyTotalEmissions(Long communityId) {
+        return communityRepository.calculateYearlyTotalEmissions(communityId);
+    }
+
+    public Long calculateCommunityYearlyAsepticCartonEmissions(Long communityId){
+        return communityRepository.calculateYearlyAsepticCartonEmissions(communityId);
+    }
+
+    public Long calculateCommunityYearlyPaperCartonEmissions(Long communityId){
+        return communityRepository.calculateYearlyPaperCartonEmissions(communityId);
     }
 
     public int calculateUserRanking(Long userId, Long communityId) {
@@ -100,6 +125,61 @@ public class CommunityService {
                 .communityTotalRefrigeratedEmissions(monthlyCommunityPaperCartonEmissions)
                 .communityDepth2(depth2Name)
                 .communityRanking(depth2CommunityRanking)
+                .wasteDisposalHistories(wasteDisposalHistories)
+                .build();
+
+    }
+
+    public RecentCoreInfoDto getRecentCoreInfo(String email, Pageable pageable) {
+
+        User user = userRepository.findMemberByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        String communityName = user.getCommunity().getName();
+
+        // 주
+        Long weeklyCommunityTotalEmissions = calculateCommunityWeeklyTotalEmissions(user.getCommunity().getId());
+        Long weeklyCommunityAsepticCartonEmissions = calculateCommunityWeeklyAsepticCartonEmissions(user.getCommunity().getId());
+        Long weeklyCommunityPaperCartonEmissions = calculateCommunityWeeklyPaperCartonEmissions(user.getCommunity().getId());
+
+        // 월
+        Long monthlyCommunityTotalEmissions = calculateCommunityMonthlyTotalEmissions(user.getCommunity().getId());
+        Long monthlyCommunityAsepticCartonEmissions = calculateCommunityMonthlyAsepticCartonEmissions(user.getCommunity().getId());
+        Long monthlyCommunityPaperCartonEmissions = calculateCommunityMonthlyPaperCartonEmissions(user.getCommunity().getId());
+
+        // 년
+        Long yearlyCommunityTotalEmissions = calculateCommunityYearlyTotalEmissions(user.getCommunity().getId());
+        Long yearlyCommunityAsepticCartonEmissions = calculateCommunityYearlyAsepticCartonEmissions(user.getCommunity().getId());
+        Long yearlyCommunityPaperCartonEmissions = calculateCommunityYearlyPaperCartonEmissions(user.getCommunity().getId());
+
+        // DTO로 매핑
+        Page<WasteDisposalHistory> historyPage = wasteDisposalHistoryRepository.findByCommunityId(user.getCommunity().getId(), pageable);
+        List<WasteDisposalHistoryDto> wasteDisposalHistories = historyPage.getContent()
+                .stream()
+                .map(history -> new WasteDisposalHistoryDto(
+                        history.getUser().getNickname(),
+                        history.getDisposalTime(),
+                        history.getAsepticCartonQuantity(),
+                        history.getPaperCartonQuantity(),
+                        history.getLikes(),
+                        history.getPaperOrAseptic()))
+                .collect(Collectors.toList());
+
+
+        // CommunityInfoDto 객체 생성
+        return RecentCoreInfoDto.builder()
+                .communityName(communityName)
+                .communityTotalEmissionsWeek(weeklyCommunityTotalEmissions)
+                .communityTotalAsepticEmissionsWeek(weeklyCommunityAsepticCartonEmissions)
+                .communityTotalRefrigeratedEmissionsWeek(weeklyCommunityPaperCartonEmissions)
+                .communityTotalEmissionsMonth(monthlyCommunityTotalEmissions)
+                .communityTotalAsepticEmissionsMonth(monthlyCommunityAsepticCartonEmissions)
+                .communityTotalRefrigeratedEmissionsMonth(monthlyCommunityPaperCartonEmissions)
+                .communityTotalEmissionsYear(yearlyCommunityTotalEmissions)
+                .communityTotalAsepticEmissionsYear(yearlyCommunityAsepticCartonEmissions)
+                .communityTotalRefrigeratedEmissionsYear(yearlyCommunityPaperCartonEmissions)
                 .wasteDisposalHistories(wasteDisposalHistories)
                 .build();
 
