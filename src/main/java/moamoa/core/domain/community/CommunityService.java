@@ -257,13 +257,13 @@ public class CommunityService {
         Long communityTotalEmissions = communityRepository.calculateTotalEmissions(user.getCommunity().getId());
 
         // 주별 배출량 조회
-        List<Long> weeksEmission = get4WeeksCommunityEmission(user.getId());
+        List<Long> weeksEmission = get4WeeksCommunityEmission(user.getCommunity().getId());
 
         // 월별 배출량 조회
-        List<Long> monthsEmission = get4MonthsCommunityEmission(user.getId());
+        List<Long> monthsEmission = get4MonthsCommunityEmission(user.getCommunity().getId());
 
         // 연별 배출량 조회
-        List<Long> yearsEmission = get4YearsCommunityEmission(user.getId());
+        List<Long> yearsEmission = get4YearsCommunityEmission(user.getCommunity().getId());
 
         return CommunityMissionsDto.builder()
                 .communityLevel(communityLevel)
