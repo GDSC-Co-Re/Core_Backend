@@ -54,4 +54,64 @@ public interface WasteDisposalHistoryRepository extends JpaRepository<WasteDispo
             "ORDER BY year DESC " +
             "LIMIT 4", nativeQuery = true)
     List<Object[]> get4YearsUserEmission(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity + wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND WEEK(wdh.disposalTime) = WEEK(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserWeeklyTotalEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND WEEK(wdh.disposalTime) = WEEK(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserWeeklyAsepticCartonEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND WEEK(wdh.disposalTime) = WEEK(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserWeeklyPaperCartonEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity + wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserMonthlyTotalEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserMonthlyAsepticCartonEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND MONTH(wdh.disposalTime) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserMonthlyPaperCartonEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity + wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserYearlyTotalEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.asepticCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserYearlyAsepticCartonEmissions(@Param("userId") Long userId);
+
+    @Query("SELECT SUM(wdh.paperCartonQuantity) " +
+            "FROM WasteDisposalHistory wdh " +
+            "WHERE wdh.user.id = :userId " +
+            "AND YEAR(wdh.disposalTime) = YEAR(CURRENT_DATE())")
+    Long calculateUserYearlyPaperCartonEmissions(@Param("userId") Long userId);
 }

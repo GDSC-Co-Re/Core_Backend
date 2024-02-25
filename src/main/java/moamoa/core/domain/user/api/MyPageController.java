@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import moamoa.core.domain.user.UserService;
 import moamoa.core.domain.user.dto.MainInfoDto;
 import moamoa.core.domain.user.dto.MyPageDto;
+import moamoa.core.domain.user.dto.UserCoreStoryDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,18 @@ public class MyPageController {
 
         // 조회된 정보를 MainInfoDto에 담아 반환
         return ResponseEntity.ok(myPageDto);
+    }
+
+    @GetMapping("/core-story")
+    public ResponseEntity<UserCoreStoryDto> getUserCoreStory(Authentication authentication,
+                                                             @PageableDefault(size = 5, sort = "disposalTime", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        // 인증된 사용자의 이메일 또는 ID를 가져옴
+        String userEmail = authentication.getName(); // 또는 다른 식별 정보
+
+        // UserService를 통해 필요한 정보 조회
+        UserCoreStoryDto userCoreStoryDto = userService.getUserCoreStory(userEmail, pageable);
+
+        // 조회된 정보를 MainInfoDto에 담아 반환
+        return ResponseEntity.ok(userCoreStoryDto);
     }
 }
