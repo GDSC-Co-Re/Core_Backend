@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import moamoa.core.domain.community.CommunityService;
 import moamoa.core.domain.community.dto.CommunityInfoDto;
+import moamoa.core.domain.community.dto.CommunityMissionsDto;
 import moamoa.core.domain.community.dto.LocalRankingDto;
 import moamoa.core.domain.community.dto.RecentCoreInfoDto;
 import moamoa.core.domain.user.UserService;
@@ -61,5 +62,17 @@ public class CommunityController {
 
         // 조회된 정보를 MainInfoDto에 담아 반환
         return ResponseEntity.ok(localRankingDto);
+    }
+
+    @GetMapping("/missions")
+    public ResponseEntity<CommunityMissionsDto> getCommunityMissionsInfo(Authentication authentication){
+        // 인증된 사용자의 이메일 또는 ID를 가져옴
+        String userEmail = authentication.getName(); // 또는 다른 식별 정보
+
+        // UserService를 통해 필요한 정보 조회
+        CommunityMissionsDto communityMissionsDto = communityService.getCommunityMissionsInfo(userEmail);
+
+        // 조회된 정보를 MainInfoDto에 담아 반환
+        return ResponseEntity.ok(communityMissionsDto);
     }
 }
