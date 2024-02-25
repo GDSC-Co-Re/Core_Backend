@@ -2,6 +2,8 @@ package moamoa.core.domain.community;
 
 import moamoa.core.domain.Address;
 import moamoa.core.domain.community.dto.CommunityInfoDto;
+import moamoa.core.domain.community.dto.CommunityLocalRankingDto;
+import moamoa.core.domain.community.dto.LocalRankingDto;
 import moamoa.core.domain.community.dto.RecentCoreInfoDto;
 import moamoa.core.domain.user.User;
 import moamoa.core.domain.user.UserRepository;
@@ -10,6 +12,7 @@ import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistory;
 import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistoryRepository;
 import moamoa.core.domain.wasteDisposalHistory.dto.WasteDisposalHistoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -183,5 +186,38 @@ public class CommunityService {
                 .wasteDisposalHistories(wasteDisposalHistories)
                 .build();
 
+    }
+
+    public LocalRankingDto getLocalRankingInfo(String email){
+        User user = userRepository.findMemberByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        String communityName = user.getCommunity().getName();
+        String depth2Name = user.getCommunity().getAddress().getDepth2();
+        int depth2CommunityRanking = calculateDepth2CommunityRanking(user.getCommunity().getId(), depth2Name);
+
+
+        List<Object[]> topCommunitiesResults = communityRepository.findTop3CommunitiesInDepth2(depth2Name);
+        List<CommunityLocalRankingDto> topCommunities = topCommunitiesResults.stream().map(result -> {
+            String name = (String) result[0];
+            String country = (String) result[1];
+            String depth1 = (String) result[2];
+            String depth2 = (String) result[3];
+            String depth3 = (String) result[4];
+            String zipcode = (String) result[5];
+            Long ranking = (Long) result[6];
+
+            Address address = new Address(country, depth1, depth2, depth3, zipcode);
+            return new CommunityLocalRankingDto(name, address, ranking);
+        }).collect(Collectors.toList());
+
+        return LocalRankingDto.builder()
+                .communityName(communityName)
+                .communityDepth2(depth2Name)
+                .communityRanking(depth2CommunityRanking)
+                .CommunityLocalRanking(topCommunities)
+                .build();
     }
 }
