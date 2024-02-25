@@ -131,6 +131,7 @@ public class CommunityService {
         List<WasteDisposalHistoryDto> wasteDisposalHistories = historyPage.getContent()
                 .stream()
                 .map(history -> new WasteDisposalHistoryDto(
+                        history.getId(),
                         history.getUser().getNickname(),
                         history.getDisposalTime(),
                         history.getAsepticCartonQuantity(),
@@ -182,6 +183,7 @@ public class CommunityService {
         List<WasteDisposalHistoryDto> wasteDisposalHistories = historyPage.getContent()
                 .stream()
                 .map(history -> new WasteDisposalHistoryDto(
+                        history.getId(),
                         history.getUser().getNickname(),
                         history.getDisposalTime(),
                         history.getAsepticCartonQuantity(),

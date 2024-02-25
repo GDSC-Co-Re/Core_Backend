@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.time.LocalDateTime;
@@ -23,6 +25,14 @@ public class WasteDisposalHistoryService {
     public WasteDisposalHistoryService(UserRepository userRepository, WasteDisposalHistoryRepository wasteDisposalHistoryRepository) {
         this.userRepository = userRepository;
         this.wasteDisposalHistoryRepository = wasteDisposalHistoryRepository;
+    }
+
+    public void incrementLikes(Long id) {
+        WasteDisposalHistory history = wasteDisposalHistoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "WasteDisposalHistory not found with id: " + id));
+        history.addLikes();
+        wasteDisposalHistoryRepository.save(history);
     }
 
     public void createWasteDisposal(String email, WasteDisposalHistoryRequestDto requestDto) {

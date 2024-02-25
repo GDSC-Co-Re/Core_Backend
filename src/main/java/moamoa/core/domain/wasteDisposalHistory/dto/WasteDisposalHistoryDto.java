@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @Builder
 public class WasteDisposalHistoryDto {
 
+    @Schema(description = "히스토리 아이디", example = "51")
+    private Long wasteDisposalHistoryId;
+
     @Schema(description = "유저명", example = "홍길동")
     private String userNickname;
 
