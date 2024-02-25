@@ -21,7 +21,7 @@ public class Address {
     private String zipcode;
 
     @Builder
-    Address(String country, String depth1, String depth2, String depth3, String zipcode){
+    public Address(String country, String depth1, String depth2, String depth3, String zipcode){
         this.country = country;
         this.depth1 = depth1;
         this.depth2 = depth2;

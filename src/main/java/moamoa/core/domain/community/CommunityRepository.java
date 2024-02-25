@@ -1,8 +1,11 @@
 package moamoa.core.domain.community;
 
+import moamoa.core.domain.community.dto.CommunityLocalRankingDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
     // 커뮤니티 총 배출량 계산
@@ -112,4 +115,27 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "GROUP BY c.community_id) AS community_rankings " +
             "WHERE community_id = :communityId", nativeQuery = true)
     int findDepth2CommunityRanking(@Param("communityId") Long communityId, @Param("depth2") String depth2);
+
+    @Query(value = "SELECT " +
+            "c.community_name AS communityName, " +
+            "c.country AS country, " +
+            "c.depth1 AS depth1, " +
+            "c.depth2 AS depth2, " +
+            "c.depth3 AS depth3, " +
+            "c.zipcode AS zipcode, " +
+            "ranked.ranking AS communityRanking " +
+            "FROM ( " +
+            "SELECT " +
+            "c.community_id, " +
+            "SUM(wdh.waste_disposal_history_aseptic_quantity) + SUM(wdh.waste_disposal_history_paper_quantity) AS total_emissions, " +
+            "RANK() OVER (ORDER BY SUM(wdh.waste_disposal_history_aseptic_quantity) + SUM(wdh.waste_disposal_history_paper_quantity) DESC) AS ranking " +
+            "FROM community_tb c " +
+            "JOIN waste_disposal_history_tb wdh ON c.community_id = wdh.community_id " +
+            "WHERE c.depth2 = :depth2 " +
+            "GROUP BY c.community_id " +
+            ") AS ranked " +
+            "JOIN community_tb c ON ranked.community_id = c.community_id " +
+            "WHERE ranked.ranking <= 3 " +
+            "ORDER BY ranked.ranking ASC", nativeQuery = true)
+    List<Object[]> findTop3CommunitiesInDepth2(@Param("depth2") String depth2);
 }
