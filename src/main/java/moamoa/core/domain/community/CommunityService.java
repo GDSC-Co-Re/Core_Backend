@@ -1,13 +1,11 @@
 package moamoa.core.domain.community;
 
 import moamoa.core.domain.Address;
-import moamoa.core.domain.community.dto.CommunityInfoDto;
-import moamoa.core.domain.community.dto.CommunityLocalRankingDto;
-import moamoa.core.domain.community.dto.LocalRankingDto;
-import moamoa.core.domain.community.dto.RecentCoreInfoDto;
+import moamoa.core.domain.community.dto.*;
 import moamoa.core.domain.user.User;
 import moamoa.core.domain.user.UserRepository;
 import moamoa.core.domain.user.dto.MainInfoDto;
+import moamoa.core.domain.user.dto.MyPageDto;
 import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistory;
 import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistoryRepository;
 import moamoa.core.domain.wasteDisposalHistory.dto.WasteDisposalHistoryDto;
@@ -82,6 +80,28 @@ public class CommunityService {
 
     public int calculateDepth2CommunityRanking(Long communityId, String depth2) {
         return communityRepository.findDepth2CommunityRanking(communityId, depth2);
+    }
+
+    public List<Long> get4WeeksCommunityEmission(Long communityId) {
+        List<Object[]> results = wasteDisposalHistoryRepository.get4WeeksCommunityEmission(communityId);
+        return results.stream()
+                .map(result -> ((Number) result[2]).longValue())
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> get4MonthsCommunityEmission(Long communityId) {
+        List<Object[]> results = wasteDisposalHistoryRepository.get4MonthsCommunityEmission(communityId);
+        return results.stream()
+                .map(result -> ((Number) result[2]).longValue())
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> get4YearsCommunityEmission(Long communityId) {
+        List<Object[]> results = wasteDisposalHistoryRepository.get4YearsCommunityEmission(communityId);
+        return results.stream()
+                .map(result -> ((Number) result[1]).longValue())
+                .collect(Collectors.toList());
+
     }
 
     public CommunityInfoDto getCommunityInfo(String email, Pageable pageable){
@@ -218,6 +238,38 @@ public class CommunityService {
                 .communityDepth2(depth2Name)
                 .communityRanking(depth2CommunityRanking)
                 .CommunityLocalRanking(topCommunities)
+                .build();
+    }
+
+    public CommunityMissionsDto getCommunityMissionsInfo(String email){
+
+        User user = userRepository.findMemberByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        int communityLevel = user.getCommunity().getLevel();
+
+        Long communityMembers = communityRepository.getMemberCount(user.getCommunity().getId());
+
+        Long communityTotalEmissions = communityRepository.calculateTotalEmissions(user.getCommunity().getId());
+
+        // 주별 배출량 조회
+        List<Long> weeksEmission = get4WeeksCommunityEmission(user.getId());
+
+        // 월별 배출량 조회
+        List<Long> monthsEmission = get4MonthsCommunityEmission(user.getId());
+
+        // 연별 배출량 조회
+        List<Long> yearsEmission = get4YearsCommunityEmission(user.getId());
+
+        return CommunityMissionsDto.builder()
+                .communityLevel(communityLevel)
+                .communityMembers(communityMembers)
+                .communityTotalEmissions(communityTotalEmissions)
+                .weeksEmission(weeksEmission)
+                .monthsEmission(monthsEmission)
+                .yearsEmission(yearsEmission)
                 .build();
     }
 }
