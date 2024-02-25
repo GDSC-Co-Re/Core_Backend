@@ -8,10 +8,7 @@ import moamoa.core.domain.wasteDisposalHistory.WasteDisposalHistoryService;
 import moamoa.core.domain.wasteDisposalHistory.dto.WasteDisposalHistoryRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/waste-disposal")
@@ -28,6 +25,12 @@ public class WasteDisposalHistoryController {
 
         wasteDisposalHistoryService.createWasteDisposal(userEmail, requestDto);
         return ResponseEntity.ok("Waste disposal history saved successfully");
+    }
+
+    @PostMapping("/{id}/likes")
+    public ResponseEntity<Void> incrementLikes(@PathVariable Long id) {
+        wasteDisposalHistoryService.incrementLikes(id);
+        return ResponseEntity.ok().build();
     }
 
 }
